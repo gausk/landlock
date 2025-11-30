@@ -3,7 +3,7 @@ use landlock::{
     path_beneath_rules,
 };
 
-fn restrict_access() -> Result<(), RulesetError> {
+pub fn restrict_access() -> Result<(), RulesetError> {
     let abi = ABI::V1;
 
     let status = Ruleset::default()
@@ -29,4 +29,17 @@ fn restrict_access() -> Result<(), RulesetError> {
         RulesetStatus::NotEnforced => println!("Not sandboxed! Please update your kernel."),
     }
     Ok(())
+}
+
+#[test]
+fn test_restrict_access() {
+    restrict_access().unwrap();
+
+    let err = std::fs::read_dir("/var/log").unwrap_err();
+    assert_eq!(err.kind(), std::io::ErrorKind::PermissionDenied);
+}
+
+#[test]
+fn test_without_restrict_access() {
+    std::fs::read_dir("/var/log").unwrap();
 }

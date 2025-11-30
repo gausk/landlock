@@ -1,5 +1,6 @@
+use crate::landlock::restrict_access;
 mod landlock;
 
 fn main() {
-    println!("Hello, world!");
+    restrict_access().unwrap();
 }
